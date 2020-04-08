@@ -162,6 +162,7 @@ def tiles(
     rescale: str = None,
     color_ops: str = None,
     color_map: str = None,
+    pan: bool = False,
     pixel_selection: str = "first",
 ) -> Tuple[str, str, BinaryIO]:
     """Handle tile requests."""
@@ -184,6 +185,7 @@ def tiles(
             pixel_selection=pixel_selection(),
             expr=expr,
             tilesize=tilesize,
+            pan=pan,
         )
 
     elif bands is not None:
@@ -196,6 +198,7 @@ def tiles(
             pixel_selection=pixel_selection(),
             bands=tuple(bands.split(",")),
             tilesize=tilesize,
+            pan=pan,
         )
     else:
         return ("NOK", "text/plain", "No bands nor expression given")
