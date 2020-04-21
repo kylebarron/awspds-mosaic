@@ -10,7 +10,7 @@ inst_reqs = [
     "mercantile",
     "Pillow",
     "rio-color",
-    "rio_tiler>=1.2.7",
+    "rio-tiler>=2.0a4",
     "rio_tiler_mosaic>=0.0.1dev3",
     "requests",
     "supermercado",
