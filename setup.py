@@ -5,6 +5,7 @@ from setuptools import setup, find_packages
 
 # Runtime requirements.
 inst_reqs = [
+    "lambda-proxy~=5.2",
     "lambda-proxy-cache",
     "loguru",
     "mercantile",

@@ -112,6 +112,7 @@ def create(
     methods=["GET"],
     cors=True,
     tag=["mosaic"],
+    cache_control=os.getenv("CACHE_CONTROL", None),
 )
 def info(mosaicid: str) -> Tuple[str, str, str]:
     """Handle /create requests."""
@@ -128,6 +129,7 @@ def info(mosaicid: str) -> Tuple[str, str, str]:
     payload_compression_method="gzip",
     binary_b64encode=True,
     tag=["metadata"],
+    cache_control=os.getenv("CACHE_CONTROL", None),
 )
 def _get_geojson(mosaicid: str = None, url: str = None) -> Tuple[str, str, str]:
     """
@@ -165,7 +167,13 @@ def _get_geojson(mosaicid: str = None, url: str = None) -> Tuple[str, str, str]:
     return ("OK", "application/json", json.dumps(geojson))
 
 
-@app.route("/favicon.ico", methods=["GET"], cors=True, tag=["other"])
+@app.route(
+    "/favicon.ico",
+    methods=["GET"],
+    cors=True,
+    tag=["other"],
+    cache_control=os.getenv("CACHE_CONTROL", None),
+)
 def favicon() -> Tuple[str, str, str]:
     """Favicon."""
     return ("EMPTY", "text/plain", "")

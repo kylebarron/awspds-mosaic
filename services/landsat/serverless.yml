@@ -39,6 +39,7 @@ functions:
     layers:
       - arn:aws:lambda:${self:provider.region}:524387336408:layer:gdal24-py37-cogeo:5
     environment:
+      CACHE_CONTROL: ${opt:cache-control, 'max-age=3600'}
       GDAL_DATA: /opt/share/gdal
       PROJ_LIB: /opt/share/proj
       MAPBOX_ACCESS_TOKEN: ${opt:token, ""}
@@ -59,6 +60,7 @@ functions:
     layers:
       - arn:aws:lambda:${self:provider.region}:524387336408:layer:gdal24-py37-cogeo:5
     environment:
+      CACHE_CONTROL: ${opt:cache-control, 'max-age=3600'}
       CPL_TMPDIR: /tmp
       CPL_VSIL_CURL_ALLOWED_EXTENSIONS: .tif,.TIF,.ovr
       GDAL_CACHEMAX: 512
@@ -86,6 +88,7 @@ functions:
     layers:
       - arn:aws:lambda:${self:provider.region}:524387336408:layer:gdal24-py37-cogeo:5
     environment:
+      CACHE_CONTROL: ${opt:cache-control, 'max-age=3600'}
       GDAL_DATA: /opt/share/gdal
       MOSAIC_DEF_BUCKET: ${opt:bucket}
       PROJ_LIB: /opt/share/proj
@@ -102,6 +105,7 @@ functions:
       layers:
         - arn:aws:lambda:${self:provider.region}:524387336408:layer:gdal24-py37-cogeo:5
       environment:
+        CACHE_CONTROL: ${opt:cache-control, 'max-age=3600'}
         CPL_TMPDIR: /tmp
         CPL_VSIL_CURL_ALLOWED_EXTENSIONS: .tif,.TIF,.ovr
         GDAL_CACHEMAX: 512
