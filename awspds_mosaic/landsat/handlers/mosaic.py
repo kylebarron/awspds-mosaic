@@ -4,7 +4,7 @@ from typing import Any, Tuple
 
 import json
 
-from awspds_mosaic.utils import get_tilejson
+from awspds_mosaic.utils import get_tilejson, get_hash
 from awspds_mosaic.landsat.stac import stac_to_mosaicJSON
 
 from cogeo_mosaic.backends import MosaicBackend
@@ -12,7 +12,6 @@ from cogeo_mosaic.backends import MosaicBackend
 from loguru import logger
 
 from lambda_proxy.proxy import API
-from lambda_proxy_cache.proxy import get_hash
 
 app = API(name="awspds-mosaic-landsat-mosaic", debug=True)
 

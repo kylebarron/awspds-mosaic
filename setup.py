@@ -7,7 +7,6 @@ from setuptools import setup, find_packages
 inst_reqs = [
     "lambda-proxy~=5.2",
     "cogeo-mosaic @ git+https://github.com/developmentseed/cogeo-mosaic@vsEdits#egg=cogeo-mosaic",
-    "lambda-proxy-cache",
     "loguru",
     "mercantile",
     "Pillow",

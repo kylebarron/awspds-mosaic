@@ -1,10 +1,11 @@
 """awspds_mosaic.utils: utility functions."""
 
-from typing import Dict, BinaryIO, Tuple
+from typing import Any, Dict, BinaryIO, Tuple
 
 import os
 import zlib
 import json
+import hashlib
 import functools
 import itertools
 from urllib.parse import urlencode, urlparse
@@ -56,6 +57,13 @@ def get_tilejson(mosaic_def, url, tile_scale, tile_format, host, path="", **kwar
         "tiles": [tile_url],
     }
     return ("OK", "application/json", json.dumps(meta))
+
+
+def get_hash(**kwargs: Any) -> str:
+    """Create hash from dict."""
+    return hashlib.sha224(
+        json.dumps(kwargs, sort_keys=True, default=str).encode()
+    ).hexdigest()
 
 
 def _decompress_gz(gzip_buffer: BinaryIO) -> str:
