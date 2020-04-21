@@ -52,7 +52,7 @@ def tilejson(
         mosaic_def = dict(mosaic.mosaic_def)
 
     return get_tilejson(
-        mosaic_def, url, tile_scale, tile_format, path="tiles", **kwargs
+        mosaic_def, url, tile_scale, tile_format, path="/tiles", **kwargs
     )
 
 
@@ -73,11 +73,11 @@ def get_tilejson(mosaic_def, url, tile_scale, tile_format, path="", **kwargs):
     host = app.host
 
     if tile_format in ["pbf", "mvt"]:
-        tile_url = f"{host}/{path}/{{z}}/{{x}}/{{y}}.{tile_format}"
+        tile_url = f"{host}{path}/{{z}}/{{x}}/{{y}}.{tile_format}"
     elif tile_format in ["png", "jpg", "webp", "tif", "npy"]:
-        tile_url = f"{host}/{path}/{{z}}/{{x}}/{{y}}@{tile_scale}x.{tile_format}"
+        tile_url = f"{host}{path}/{{z}}/{{x}}/{{y}}@{tile_scale}x.{tile_format}"
     else:
-        tile_url = f"{host}/{path}/{{z}}/{{x}}/{{y}}@{tile_scale}x"
+        tile_url = f"{host}{path}/{{z}}/{{x}}/{{y}}@{tile_scale}x"
 
     qs = urllib.parse.urlencode(list(kwargs.items()))
     if qs:
