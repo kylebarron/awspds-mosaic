@@ -3,9 +3,7 @@
 from typing import Any, BinaryIO, Tuple
 
 import io
-import json
 
-import urllib
 import numpy
 
 import mercantile
@@ -18,7 +16,7 @@ from rio_tiler_mosaic.mosaic import mosaic_tiler
 
 from cogeo_mosaic.backends import MosaicBackend
 
-from awspds_mosaic.utils import post_process_tile
+from awspds_mosaic.utils import post_process_tile, get_tilejson
 from awspds_mosaic.pixel_methods import pixSel
 
 from PIL import Image
@@ -52,47 +50,8 @@ def tilejson(
         mosaic_def = dict(mosaic.mosaic_def)
 
     return get_tilejson(
-        mosaic_def, url, tile_scale, tile_format, path="/tiles", **kwargs
+        mosaic_def, url, tile_scale, tile_format, host=app.host, path="/tiles", **kwargs
     )
-
-
-def get_tilejson(mosaic_def, url, tile_scale, tile_format, path="", **kwargs):
-    """Construct tilejson definition
-
-    Note, this is mostly copied from a PR to cogeo-mosaic-tiler. Could be imported from
-    there in the future.
-    """
-    bounds = mosaic_def["bounds"]
-    center = [
-        (bounds[0] + bounds[2]) / 2,
-        (bounds[1] + bounds[3]) / 2,
-        mosaic_def["minzoom"],
-    ]
-
-    kwargs.update({"url": url})
-    host = app.host
-
-    if tile_format in ["pbf", "mvt"]:
-        tile_url = f"{host}{path}/{{z}}/{{x}}/{{y}}.{tile_format}"
-    elif tile_format in ["png", "jpg", "webp", "tif", "npy"]:
-        tile_url = f"{host}{path}/{{z}}/{{x}}/{{y}}@{tile_scale}x.{tile_format}"
-    else:
-        tile_url = f"{host}{path}/{{z}}/{{x}}/{{y}}@{tile_scale}x"
-
-    qs = urllib.parse.urlencode(list(kwargs.items()))
-    if qs:
-        tile_url += f"?{qs}"
-
-    meta = {
-        "bounds": bounds,
-        "center": center,
-        "maxzoom": mosaic_def["maxzoom"],
-        "minzoom": mosaic_def["minzoom"],
-        "name": url,
-        "tilejson": "2.1.0",
-        "tiles": [tile_url],
-    }
-    return ("OK", "application/json", json.dumps(meta))
 
 
 @app.route(
