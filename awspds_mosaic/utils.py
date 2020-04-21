@@ -1,10 +1,11 @@
 """awspds_mosaic.utils: utility functions."""
 
-from typing import Dict, BinaryIO, Tuple
+from typing import Any, Dict, BinaryIO, Tuple
 
 import os
 import zlib
 import json
+import hashlib
 import functools
 import itertools
 from urllib.parse import urlparse
@@ -18,6 +19,13 @@ import mercantile
 from rio_tiler.utils import linear_rescale
 from rio_color.utils import scale_dtype, to_math_type
 from rio_color.operations import parse_operations
+
+
+def get_hash(**kwargs: Any) -> str:
+    """Create hash from dict."""
+    return hashlib.sha224(
+        json.dumps(kwargs, sort_keys=True, default=str).encode()
+    ).hexdigest()
 
 
 def _decompress_gz(gzip_buffer: BinaryIO) -> str:

@@ -8,13 +8,17 @@ import urllib
 
 import mercantile
 
-from awspds_mosaic.utils import _compress_gz_json, _aws_put_data, get_mosaic_content
+from awspds_mosaic.utils import (
+    _compress_gz_json,
+    _aws_put_data,
+    get_mosaic_content,
+    get_hash,
+)
 from awspds_mosaic.landsat.stac import stac_to_mosaicJSON
 
 from loguru import logger
 
 from lambda_proxy.proxy import API
-from lambda_proxy_cache.proxy import get_hash
 
 app = API(name="awspds-mosaic-landsat-mosaic", debug=True)
 
