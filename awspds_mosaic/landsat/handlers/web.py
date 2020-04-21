@@ -10,8 +10,20 @@ from lambda_proxy.proxy import API
 app = API(name="awspds-mosaic-landsat-web", add_docs=False)
 
 
-@app.route("/", methods=["GET"], cors=True, tag=["landing page"])
-@app.route("/index.html", methods=["GET"], cors=True, tag=["landing page"])
+@app.route(
+    "/",
+    methods=["GET"],
+    cors=True,
+    tag=["landing page"],
+    cache_control=os.getenv("CACHE_CONTROL", None),
+)
+@app.route(
+    "/index.html",
+    methods=["GET"],
+    cors=True,
+    tag=["landing page"],
+    cache_control=os.getenv("CACHE_CONTROL", None),
+)
 def _landsatlive() -> Tuple[str, str, str]:
     """
     Handle / requests.
@@ -33,7 +45,13 @@ def _landsatlive() -> Tuple[str, str, str]:
     )
 
 
-@app.route("/timeserie.html", methods=["GET"], cors=True, tag=["landing page"])
+@app.route(
+    "/timeserie.html",
+    methods=["GET"],
+    cors=True,
+    tag=["landing page"],
+    cache_control=os.getenv("CACHE_CONTROL", None),
+)
 def _timeserie() -> Tuple[str, str, str]:
     """
     Handle / requests.
@@ -55,7 +73,13 @@ def _timeserie() -> Tuple[str, str, str]:
     )
 
 
-@app.route("/favicon.ico", methods=["GET"], cors=True, tag=["other"])
+@app.route(
+    "/favicon.ico",
+    methods=["GET"],
+    cors=True,
+    tag=["other"],
+    cache_control=os.getenv("CACHE_CONTROL", None),
+)
 def favicon() -> Tuple[str, str, str]:
     """Favicon."""
     return ("EMPTY", "text/plain", "")

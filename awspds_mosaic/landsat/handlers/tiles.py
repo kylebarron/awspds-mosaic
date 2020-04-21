@@ -34,6 +34,7 @@ app = API(name="awspds-mosaic-landsat-tiles", debug=False)
     payload_compression_method="gzip",
     binary_b64encode=True,
     tag=["metadata"],
+    cache_control=os.getenv("CACHE_CONTROL", None),
 )
 def tilejson(
     mosaicid: str, tile_format="png", tile_scale: int = 1, **kwargs: Any
@@ -73,6 +74,7 @@ def tilejson(
     payload_compression_method="gzip",
     binary_b64encode=True,
     tag=["tiles"],
+    cache_control=os.getenv("CACHE_CONTROL", None),
 )
 @app.route(
     "/<regex([0-9A-Fa-f]{56}):mosaicid>/<int:z>/<int:x>/<int:y>@<int:scale>x.npy",
@@ -81,6 +83,7 @@ def tilejson(
     payload_compression_method="gzip",
     binary_b64encode=True,
     tag=["tiles"],
+    cache_control=os.getenv("CACHE_CONTROL", None),
 )
 def npy_tiles(
     mosaicid: str,
@@ -141,6 +144,7 @@ def npy_tiles(
     payload_compression_method="gzip",
     binary_b64encode=True,
     tag=["tiles"],
+    cache_control=os.getenv("CACHE_CONTROL", None),
 )
 @app.route(
     "/<regex([0-9A-Fa-f]{56}):mosaicid>/<int:z>/<int:x>/<int:y>@<int:scale>x.<ext>",
@@ -149,6 +153,7 @@ def npy_tiles(
     payload_compression_method="gzip",
     binary_b64encode=True,
     tag=["tiles"],
+    cache_control=os.getenv("CACHE_CONTROL", None),
 )
 def tiles(
     mosaicid: str,
@@ -263,7 +268,13 @@ def tiles(
     )
 
 
-@app.route("/favicon.ico", methods=["GET"], cors=True, tag=["other"])
+@app.route(
+    "/favicon.ico",
+    methods=["GET"],
+    cors=True,
+    tag=["other"],
+    cache_control=os.getenv("CACHE_CONTROL", None),
+)
 def favicon() -> Tuple[str, str, str]:
     """Favicon."""
     return ("EMPTY", "text/plain", "")
