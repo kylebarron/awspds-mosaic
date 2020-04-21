@@ -2,7 +2,6 @@
 
 from typing import Any, BinaryIO, Tuple
 
-import os
 import io
 import json
 
@@ -17,7 +16,9 @@ from rio_tiler.profiles import img_profiles
 from rio_tiler.landsat8 import tile as landsatTiler
 from rio_tiler_mosaic.mosaic import mosaic_tiler
 
-from awspds_mosaic.utils import get_mosaic_content, get_assets, post_process_tile
+from cogeo_mosaic.backends import MosaicBackend
+
+from awspds_mosaic.utils import post_process_tile
 from awspds_mosaic.pixel_methods import pixSel
 
 from PIL import Image
@@ -28,7 +29,7 @@ app = API(name="awspds-mosaic-landsat-tiles", debug=False)
 
 
 @app.route(
-    "/<regex([0-9A-Fa-f]{56}):mosaicid>/tilejson.json",
+    "/tilejson.json",
     methods=["GET"],
     cors=True,
     payload_compression_method="gzip",
@@ -36,7 +37,7 @@ app = API(name="awspds-mosaic-landsat-tiles", debug=False)
     tag=["metadata"],
 )
 def tilejson(
-    mosaicid: str, tile_format="png", tile_scale: int = 1, **kwargs: Any
+    url: str, tile_format="png", tile_scale: int = 1, **kwargs: Any
 ) -> Tuple[str, str, str]:
     """
     Handle /tilejson.json requests.
@@ -44,22 +45,50 @@ def tilejson(
     Note: All the querystring parameters are translated to function keywords
     and passed as string value by lambda_proxy
     """
-    bucket = os.environ["MOSAIC_DEF_BUCKET"]
-    url = f"s3://{bucket}/mosaics/{mosaicid}.json.gz"
-    mosaic_definition = get_mosaic_content(url)
+    if url is None:
+        return ("NOK", "text/plain", "Missing 'URL' parameter")
+
+    with MosaicBackend(url) as mosaic:
+        mosaic_def = dict(mosaic.mosaic_def)
+
+    return get_tilejson(
+        mosaic_def, url, tile_scale, tile_format, path="tiles", **kwargs
+    )
+
+
+def get_tilejson(mosaic_def, url, tile_scale, tile_format, path="", **kwargs):
+    """Construct tilejson definition
+
+    Note, this is mostly copied from a PR to cogeo-mosaic-tiler. Could be imported from
+    there in the future.
+    """
+    bounds = mosaic_def["bounds"]
+    center = [
+        (bounds[0] + bounds[2]) / 2,
+        (bounds[1] + bounds[3]) / 2,
+        mosaic_def["minzoom"],
+    ]
+
+    kwargs.update({"url": url})
+    host = app.host
+
+    if tile_format in ["pbf", "mvt"]:
+        tile_url = f"{host}/{path}/{{z}}/{{x}}/{{y}}.{tile_format}"
+    elif tile_format in ["png", "jpg", "webp", "tif", "npy"]:
+        tile_url = f"{host}/{path}/{{z}}/{{x}}/{{y}}@{tile_scale}x.{tile_format}"
+    else:
+        tile_url = f"{host}/{path}/{{z}}/{{x}}/{{y}}@{tile_scale}x"
 
     qs = urllib.parse.urlencode(list(kwargs.items()))
-    tile_url = f"{app.host}/tiles/{mosaicid}/{{z}}/{{x}}/{{y}}@{tile_scale}x.{tile_format}?{qs}"
-
-    bounds = mosaic_definition["bounds"]
-    center = [(bounds[0] + bounds[2]) / 2, (bounds[1] + bounds[3]) / 2]
+    if qs:
+        tile_url += f"?{qs}"
 
     meta = {
         "bounds": bounds,
         "center": center,
-        "maxzoom": mosaic_definition["maxzoom"],
-        "minzoom": mosaic_definition["minzoom"],
-        "name": os.path.basename(url),
+        "maxzoom": mosaic_def["maxzoom"],
+        "minzoom": mosaic_def["minzoom"],
+        "name": url,
         "tilejson": "2.1.0",
         "tiles": [tile_url],
     }
@@ -67,7 +96,7 @@ def tilejson(
 
 
 @app.route(
-    "/<regex([0-9A-Fa-f]{56}):mosaicid>/<int:z>/<int:x>/<int:y>.npy",
+    "/<int:z>/<int:x>/<int:y>.npy",
     methods=["GET"],
     cors=True,
     payload_compression_method="gzip",
@@ -75,7 +104,7 @@ def tilejson(
     tag=["tiles"],
 )
 @app.route(
-    "/<regex([0-9A-Fa-f]{56}):mosaicid>/<int:z>/<int:x>/<int:y>@<int:scale>x.npy",
+    "/<int:z>/<int:x>/<int:y>@<int:scale>x.npy",
     methods=["GET"],
     cors=True,
     payload_compression_method="gzip",
@@ -83,7 +112,7 @@ def tilejson(
     tag=["tiles"],
 )
 def npy_tiles(
-    mosaicid: str,
+    url: str,
     z: int,
     x: int,
     y: int,
@@ -93,9 +122,12 @@ def npy_tiles(
     pixel_selection: str = "first",
 ) -> Tuple[str, str, BinaryIO]:
     """Handle tile requests."""
-    bucket = os.environ["MOSAIC_DEF_BUCKET"]
-    url = f"s3://{bucket}/mosaics/{mosaicid}.json.gz"
-    assets = get_assets(url, x, y, z)
+    if url is None:
+        return ("NOK", "text/plain", "Missing 'URL' parameter")
+
+    with MosaicBackend(url) as mosaic:
+        assets = mosaic.tile(x, y, z)
+
     if not assets:
         return ("EMPTY", "text/plain", f"No assets found for tile {z}-{x}-{y}")
 
@@ -135,7 +167,7 @@ def npy_tiles(
 
 
 @app.route(
-    "/<regex([0-9A-Fa-f]{56}):mosaicid>/<int:z>/<int:x>/<int:y>.<ext>",
+    "/<int:z>/<int:x>/<int:y>.<ext>",
     methods=["GET"],
     cors=True,
     payload_compression_method="gzip",
@@ -143,7 +175,7 @@ def npy_tiles(
     tag=["tiles"],
 )
 @app.route(
-    "/<regex([0-9A-Fa-f]{56}):mosaicid>/<int:z>/<int:x>/<int:y>@<int:scale>x.<ext>",
+    "/<int:z>/<int:x>/<int:y>@<int:scale>x.<ext>",
     methods=["GET"],
     cors=True,
     payload_compression_method="gzip",
@@ -151,7 +183,7 @@ def npy_tiles(
     tag=["tiles"],
 )
 def tiles(
-    mosaicid: str,
+    url: str,
     z: int,
     x: int,
     y: int,
@@ -165,9 +197,9 @@ def tiles(
     pixel_selection: str = "first",
 ) -> Tuple[str, str, BinaryIO]:
     """Handle tile requests."""
-    bucket = os.environ["MOSAIC_DEF_BUCKET"]
-    url = f"s3://{bucket}/mosaics/{mosaicid}.json.gz"
-    assets = get_assets(url, x, y, z)
+    with MosaicBackend(url) as mosaic:
+        assets = mosaic.tile(x, y, z)
+
     if not assets:
         return ("EMPTY", "text/plain", f"No assets found for tile {z}-{x}-{y}")
 
