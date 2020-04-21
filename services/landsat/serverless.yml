@@ -37,7 +37,7 @@ functions:
     memorySize: 128
     timeout: 3
     layers:
-      - arn:aws:lambda:${self:provider.region}:524387336408:layer:gdal24-py37-cogeo:5
+      - arn:aws:lambda:${self:provider.region}:524387336408:layer:gdal24-py37-geolayer:1
     environment:
       CACHE_CONTROL: ${opt:cache-control, 'max-age=3600'}
       GDAL_DATA: /opt/share/gdal
@@ -58,7 +58,7 @@ functions:
     memorySize: 3008
     timeout: 20
     layers:
-      - arn:aws:lambda:${self:provider.region}:524387336408:layer:gdal24-py37-cogeo:5
+      - arn:aws:lambda:${self:provider.region}:524387336408:layer:gdal24-py37-geolayer:1
     environment:
       CACHE_CONTROL: ${opt:cache-control, 'max-age=3600'}
       CPL_TMPDIR: /tmp
@@ -86,7 +86,7 @@ functions:
     memorySize: 3008
     timeout: 30
     layers:
-      - arn:aws:lambda:${self:provider.region}:524387336408:layer:gdal24-py37-cogeo:5
+      - arn:aws:lambda:${self:provider.region}:524387336408:layer:gdal24-py37-geolayer:1
     environment:
       CACHE_CONTROL: ${opt:cache-control, 'max-age=3600'}
       GDAL_DATA: /opt/share/gdal
@@ -103,7 +103,7 @@ functions:
       memorySize: 3008
       timeout: 30
       layers:
-        - arn:aws:lambda:${self:provider.region}:524387336408:layer:gdal24-py37-cogeo:5
+        - arn:aws:lambda:${self:provider.region}:524387336408:layer:gdal24-py37-geolayer:1
       environment:
         CACHE_CONTROL: ${opt:cache-control, 'max-age=3600'}
         CPL_TMPDIR: /tmp
