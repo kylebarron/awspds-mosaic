@@ -43,13 +43,13 @@ functions:
       PROJ_LIB: /opt/share/proj
       MAPBOX_ACCESS_TOKEN: ${opt:token, ""}
     events:
-      - http:
+      - httpApi:
           path: /
-          method: get
+          method: GET
           cors: true
-      - http:
+      - httpApi:
           path: /{proxy+}
-          method: get
+          method: GET
           cors: true
 
   tiler:
@@ -74,9 +74,9 @@ functions:
       VSI_CACHE: TRUE
       VSI_CACHE_SIZE: 536870912
     events:
-      - http:
+      - httpApi:
           path: /tiles/{proxy+}
-          method: any
+          method: '*'
           cors: true
 
   mosaics:
@@ -90,9 +90,9 @@ functions:
       MOSAIC_DEF_BUCKET: ${opt:bucket}
       PROJ_LIB: /opt/share/proj
     events:
-      - http:
+      - httpApi:
           path: /mosaic/{proxy+}
-          method: any
+          method: '*'
           cors: true
 
   batch:
@@ -117,7 +117,7 @@ functions:
         VSI_CACHE: TRUE
         VSI_CACHE_SIZE: 536870912
       events:
-        - http:
+        - httpApi:
             path: /batch/{proxy+}
-            method: any
+            method: '*'
             cors: true
