@@ -8,11 +8,7 @@ import requests
 import itertools
 from datetime import datetime
 
-import mercantile
-from shapely.geometry import box, shape
-from supermercado import burntiles
-
-from awspds_mosaic.utils import bbox_to_geojson
+from cogeo_mosaic.create import create_mosaic_from_features
 
 from loguru import logger
 
@@ -34,6 +30,7 @@ def _get_season(date, lat=0):
 def stac_to_mosaicJSON(
     query: Dict,
     minzoom: int = 7,
+    quadkey_zoom: int = 7,
     maxzoom: int = 12,
     optimized_selection: bool = True,
     maximum_items_per_tile: int = 20,
@@ -50,6 +47,8 @@ def stac_to_mosaicJSON(
         sat-api query.
     minzoom : int, optional, (default: 7)
         Mosaic Min Zoom.
+    quadkey_zoom : int, optional, (default: 7)
+        Mosaic Quadkey Zoom.
     maxzoom : int, optional (default: 12)
         Mosaic Max Zoom.
     optimized_selection : bool, optional (default: true)
@@ -127,43 +126,11 @@ def stac_to_mosaicJSON(
     else:
         dataset = features
 
-    if query.get("bbox"):
-        bounds = query["bbox"]
-    else:
-        bounds = burntiles.find_extrema(dataset)
-
-    for i in range(len(dataset)):
-        dataset[i]["geometry"] = shape(dataset[i]["geometry"])
-
-    tiles = burntiles.burn([bbox_to_geojson(bounds)], minzoom)
-    tiles = list(set(["{2}-{0}-{1}".format(*tile.tolist()) for tile in tiles]))
-
-    logger.debug(f"Number tiles: {len(tiles)}")
-
-    mosaic_definition = dict(
-        mosaicjson="0.0.1",
+    return create_mosaic_from_features(
+        features=dataset,
         minzoom=minzoom,
         maxzoom=maxzoom,
-        bounds=bounds,
-        center=[(bounds[0] + bounds[2]) / 2, (bounds[1] + bounds[3]) / 2, minzoom],
-        tiles={},
+        quadkey_zoom=quadkey_zoom,
+        accessor=lambda feature: feature["properties"]["landsat:product_id"],
+        maximum_items_per_tile=maximum_items_per_tile,
     )
-
-    for tile in tiles:
-        z, x, y = list(map(int, tile.split("-")))
-        tile = mercantile.Tile(x=x, y=y, z=z)
-        quadkey = mercantile.quadkey(*tile)
-        geometry = box(*mercantile.bounds(tile))
-        intersect_dataset = list(
-            filter(lambda x: geometry.intersects(x["geometry"]), dataset)
-        )
-        if len(intersect_dataset):
-            # We limit the item per quadkey to 20
-            if maximum_items_per_tile:
-                intersect_dataset = intersect_dataset[0:maximum_items_per_tile]
-
-            mosaic_definition["tiles"][quadkey] = [
-                scene["properties"]["landsat:product_id"] for scene in intersect_dataset
-            ]
-
-    return mosaic_definition
