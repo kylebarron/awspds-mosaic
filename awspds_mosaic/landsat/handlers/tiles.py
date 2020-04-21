@@ -9,9 +9,10 @@ import numpy
 import mercantile
 from rasterio.transform import from_bounds
 
-from rio_tiler.utils import expression as expressionTiler, array_to_image, get_colormap
+from rio_tiler.colormap import get_colormap
+from rio_tiler.utils import expression as expressionTiler, render
 from rio_tiler.profiles import img_profiles
-from rio_tiler.landsat8 import tile as landsatTiler
+from rio_tiler.io.landsat8 import tile as landsatTiler
 from rio_tiler_mosaic.mosaic import mosaic_tiler
 
 from cogeo_mosaic.backends import MosaicBackend
@@ -215,11 +216,11 @@ def tiles(
             frames.append(
                 Image.open(
                     io.BytesIO(
-                        array_to_image(
+                        render(
                             img,
                             mask[i],
                             img_format="png",
-                            color_map=color_map,
+                            colormap=color_map,
                             **options,
                         )
                     )
@@ -255,7 +256,7 @@ def tiles(
     return (
         "OK",
         f"image/{ext}",
-        array_to_image(rtile, mask, img_format=driver, color_map=color_map, **options),
+        render(rtile, mask, img_format=driver, colormap=color_map, **options),
     )
 
 
