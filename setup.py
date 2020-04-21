@@ -10,7 +10,7 @@ inst_reqs = [
     "mercantile",
     "Pillow",
     "rio-color",
-    "rio-tiler>=2.0a4",
+    "rio-tiler @ git+https://github.com/cogeotiff/rio-tiler@v2#egg=rio-tiler",
     "rio_tiler_mosaic>=0.0.1dev3",
     "requests",
     "supermercado",
