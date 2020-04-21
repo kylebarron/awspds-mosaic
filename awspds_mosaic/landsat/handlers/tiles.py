@@ -2,6 +2,7 @@
 
 from typing import Any, BinaryIO, Tuple
 
+import os
 import io
 
 import numpy

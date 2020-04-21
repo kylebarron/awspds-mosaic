@@ -2,6 +2,7 @@
 
 from typing import Any, Tuple
 
+import os
 import json
 
 from awspds_mosaic.utils import get_tilejson, get_hash
