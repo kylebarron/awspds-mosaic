@@ -221,7 +221,7 @@ def tiles(
                             img,
                             mask[i],
                             img_format="png",
-                            color_map=color_map,
+                            colormap=color_map,
                             **options,
                         )
                     )
@@ -257,7 +257,7 @@ def tiles(
     return (
         "OK",
         f"image/{ext}",
-        render(rtile, mask, img_format=driver, color_map=color_map, **options),
+        render(rtile, mask, img_format=driver, colormap=color_map, **options),
     )
 
 
