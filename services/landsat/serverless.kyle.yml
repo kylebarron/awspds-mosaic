@@ -6,6 +6,31 @@ provider:
   stage: ${opt:stage, 'production'}
   region: us-west-2
   deploymentBucket: ${opt:bucket}
+  httpApi:
+    cors:
+      allowedOrigins:
+        - http://localhost
+        - https://all-transit.com
+        - https://kylebarron.dev
+        - https://kylebarron.github.io
+        - https://landsat3d.com
+        - https://landsat8.earth
+        - https://nst.guide
+        - https://nstguide.com
+        - https://sentine2.earth
+        - https://trails3d.com
+      allowedHeaders:
+        - Authorization
+        - Content-Type
+        - X-Amz-Date
+        - X-Amz-Security-Token
+        - X-Amz-User-Agent
+        - X-Api-Key
+      allowedMethods:
+        - GET
+        - OPTIONS
+      allowCredentials: true
+      maxAge: 6000 # In seconds
 
   stackTags:
     Project: labs
@@ -32,27 +57,6 @@ package:
   artifact: ../../package.zip
 
 functions:
-  web:
-    handler: awspds_mosaic.landsat.handlers.web.app
-    memorySize: 128
-    timeout: 3
-    layers:
-      - arn:aws:lambda:${self:provider.region}:524387336408:layer:gdal24-py37-geolayer:1
-    environment:
-      CACHE_CONTROL: ${opt:cache-control, 'max-age=3600'}
-      GDAL_DATA: /opt/share/gdal
-      PROJ_LIB: /opt/share/proj
-      MAPBOX_ACCESS_TOKEN: ${opt:token, ""}
-    events:
-      - httpApi:
-          path: /
-          method: GET
-          cors: true
-      - httpApi:
-          path: /{proxy+}
-          method: GET
-          cors: true
-
   tiler:
     handler: awspds_mosaic.landsat.handlers.tiles.app
     memorySize: 3008
@@ -79,7 +83,6 @@ functions:
       - httpApi:
           path: /tiles/{proxy+}
           method: '*'
-          cors: true
 
   mosaics:
     handler: awspds_mosaic.landsat.handlers.mosaic.app
@@ -96,32 +99,3 @@ functions:
       - httpApi:
           path: /mosaic/{proxy+}
           method: '*'
-          cors: true
-
-  batch:
-      handler: awspds_mosaic.landsat.handlers.tiles.app
-      memorySize: 3008
-      timeout: 30
-      layers:
-        - arn:aws:lambda:${self:provider.region}:524387336408:layer:gdal24-py37-geolayer:1
-      environment:
-        CACHE_CONTROL: ${opt:cache-control, 'max-age=3600'}
-        CPL_TMPDIR: /tmp
-        CPL_VSIL_CURL_ALLOWED_EXTENSIONS: .tif,.TIF,.ovr
-        GDAL_CACHEMAX: 512
-        GDAL_DATA: /opt/share/gdal
-        GDAL_DISABLE_READDIR_ON_OPEN: FALSE
-        GDAL_HTTP_MERGE_CONSECUTIVE_RANGES: YES
-        GDAL_HTTP_MULTIPLEX: YES
-        GDAL_HTTP_VERSION: 2
-        MAX_THREADS: 20
-        MOSAIC_DEF_BUCKET: ${opt:bucket}
-        PROJ_LIB: /opt/share/proj
-        PYTHONWARNINGS: ignore
-        VSI_CACHE: TRUE
-        VSI_CACHE_SIZE: 536870912
-      events:
-        - httpApi:
-            path: /batch/{proxy+}
-            method: '*'
-            cors: true
