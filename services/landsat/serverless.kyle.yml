@@ -66,7 +66,7 @@ package:
 functions:
   tiler:
     handler: awspds_mosaic.landsat.handlers.tiles.app
-    memorySize: 3008
+    memorySize: 1024
     timeout: 20
     layers:
       - arn:aws:lambda:${self:provider.region}:524387336408:layer:gdal24-py37-geolayer:1
@@ -93,7 +93,7 @@ functions:
 
   mosaics:
     handler: awspds_mosaic.landsat.handlers.mosaic.app
-    memorySize: 3008
+    memorySize: 1024
     timeout: 30
     layers:
       - arn:aws:lambda:${self:provider.region}:524387336408:layer:gdal24-py37-geolayer:1
