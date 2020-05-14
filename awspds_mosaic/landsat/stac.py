@@ -8,7 +8,7 @@ import requests
 import itertools
 from datetime import datetime
 
-from cogeo_mosaic.create import create_mosaic_from_features
+from cogeo_mosaic.mosaic import MosaicJSON
 
 from loguru import logger
 
@@ -126,7 +126,7 @@ def stac_to_mosaicJSON(
     else:
         dataset = features
 
-    return create_mosaic_from_features(
+    return MosaicJSON.from_features(
         features=dataset,
         minzoom=minzoom,
         maxzoom=maxzoom,
