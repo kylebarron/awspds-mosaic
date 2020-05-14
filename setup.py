@@ -5,13 +5,14 @@ from setuptools import setup, find_packages
 
 # Runtime requirements.
 inst_reqs = [
-    "lambda-proxy~=5.2",
-    "cogeo-mosaic @ git+https://github.com/kylebarron/cogeo-mosaic@dev#egg=cogeo-mosaic",
+    # For custom response headers
+    "lambda-proxy @ git+https://github.com/kylebarron/lambda-proxy@dev#egg=lambda-proxy",
+    "cogeo-mosaic>=3.0a3",
     "loguru",
     "mercantile",
     "Pillow",
     "rio-color",
-    "rio-tiler @ git+https://github.com/cogeotiff/rio-tiler@v2#egg=rio-tiler",
+    "rio-tiler>=2.0a6",
     "rio_tiler_mosaic>=0.0.1dev3",
     "requests",
     "supermercado",

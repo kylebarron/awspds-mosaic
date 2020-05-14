@@ -48,6 +48,9 @@ provider:
       allowedMethods:
         - GET
         - OPTIONS
+      exposedResponseHeaders:
+        # Source asset strings per tile
+        - X-ASSETS
       maxAge: 6000 # In seconds
 
   stackTags:

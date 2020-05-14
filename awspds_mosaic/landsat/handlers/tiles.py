@@ -2,8 +2,9 @@
 
 from typing import Any, BinaryIO, Tuple
 
-import os
 import io
+import json
+import os
 
 import numpy
 
@@ -207,6 +208,9 @@ def tiles(
     if color_map:
         color_map = get_colormap(color_map, format="gdal")
 
+    assets_str = json.dumps(assets, separators=(',', ':'))
+    return_kwargs = {"custom_headers": {"X-ASSETS": assets_str}}
+
     if ext == "gif":
         frames = []
         options = img_profiles.get("png", {})
@@ -238,7 +242,7 @@ def tiles(
             optimize=True,
         )
         sio.seek(0)
-        return ("OK", f"image/{ext}", sio.getvalue())
+        return ("OK", f"image/{ext}", sio.getvalue(), return_kwargs)
 
     rtile = post_process_tile(tile, mask, rescale=rescale, color_formula=color_ops)
 
@@ -258,6 +262,7 @@ def tiles(
         "OK",
         f"image/{ext}",
         render(rtile, mask, img_format=driver, colormap=color_map, **options),
+        return_kwargs
     )
 
 
