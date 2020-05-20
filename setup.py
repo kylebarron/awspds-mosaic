@@ -14,9 +14,6 @@ inst_reqs = [
     "rio-color",
     "rio-tiler>=2.0a6",
     "rio_tiler_mosaic>=0.0.1dev3",
-    "requests",
-    "supermercado",
-    "shapely",
 ]
 extra_reqs = {
     "test": ["pytest", "pytest-cov", "mock"],
