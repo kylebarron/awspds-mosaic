@@ -1,62 +1,76 @@
 """awspds_mosaic.handlers.mosaics: create mosaics."""
 
+import json
+import os
+from datetime import datetime
 from typing import Any, Tuple
 
-import os
-import json
-
-from awspds_mosaic.utils import get_tilejson, get_hash
-from awspds_mosaic.landsat.stac import stac_to_mosaicJSON
-
+from awspds_mosaic.utils import get_hash, get_tilejson
 from cogeo_mosaic.backends import MosaicBackend
-
-from loguru import logger
-
 from lambda_proxy.proxy import API
+
+from landsat_cogeo_mosaic.mosaic import features_to_mosaicJSON
+from landsat_cogeo_mosaic.stac import search
+from landsat_cogeo_mosaic.util import filter_season
 
 app = API(name="awspds-mosaic-landsat-mosaic", debug=True)
 
 
 @app.route("/create", methods=["POST"], cors=True, tag=["mosaic"])
 def create(
-    body: str,
     url: str,
+    bounds: str,
+    min_cloud: float = 0,
+    max_cloud: float = 100,
+    min_date='2013-01-01',
+    max_date= datetime.strftime(datetime.today(), "%Y-%m-%d"),
+    period: str = None,
+    period_qty: int = 1,
+    seasons: str = None,
     minzoom: int = 7,
     maxzoom: int = 12,
-    optimized_selection: bool = False,
-    maximum_items_per_tile: int = 20,
-    stac_collection_limit: int = 500,
-    seasons: str = None,
-    tile_format: str = "png",
+    quadkey_zoom: int = 8,
+    tile_format: str = "jpg",
     tile_scale: int = 1,
     **kwargs: Any,
 ) -> Tuple[str, str, str]:
-    """Handle /create requests."""
-    body = json.loads(body)
-    logger.debug(body)
+    """Handle /create requests.
 
+    Args:
+        - bounds: Comma-separated bounding box: "west, south, east, north"
+        - min_cloud: Minimum cloud percentage
+        - max_cloud: Maximum cloud percentage
+        - min_date: Minimum date, inclusive
+        - max_date: Maximum date, inclusive
+        - period: Time period. If provided, overwrites `max-date` with the given period after `min-date`. Choice of 'day', 'week', 'month', 'year'
+        - period_qty: Number of periods to apply after `min-date`. Only applies if `period` is provided
+        - seasons, can provide multiple. Choice of 'spring', 'summer', 'autumn', 'winter'
+    """
+    period_choices = ['day', 'week', 'month', 'year']
+    if period not in period_choices:
+        return ("NOK", "text/plain", f"Period must be one of {period_choices}")
+
+    min_cloud = float(min_cloud)
+    max_cloud = float(max_cloud)
     minzoom = int(minzoom)
     maxzoom = int(maxzoom)
-    if isinstance(optimized_selection, str):
-        optimized_selection = (
-            False if optimized_selection in ["False", "false"] else True
-        )
+    bounds = tuple(map(float, bounds.split(',')))
 
     if seasons:
         seasons = seasons.split(",")
     else:
-        seasons = ["spring", "summer", "autumn", "winter"]
-
-    maximum_items_per_tile = int(maximum_items_per_tile)
-    stac_collection_limit = int(stac_collection_limit)
+        seasons = None
 
     mosaicid = get_hash(
-        body=body,
+        bounds=bounds,
+        min_cloud=min_cloud,
+        max_cloud=max_cloud,
+        min_date=min_date,
+        max_date=max_date,
+        period=period,
+        period_qty=period_qty,
         minzoom=minzoom,
         maxzoom=maxzoom,
-        optimized_selection=optimized_selection,
-        maximum_items_per_tile=maximum_items_per_tile,
-        stac_collection_limit=stac_collection_limit,
         seasons=seasons,
     )
 
@@ -82,17 +96,26 @@ def create(
     except Exception:
         pass
 
-    body["query"].update({"eo:platform": {"eq": "landsat-8"}})
+    features = search(
+        bounds=bounds,
+        min_cloud=min_cloud,
+        max_cloud=max_cloud,
+        min_date=min_date,
+        max_date=max_date,
+        period=period,
+        period_qty=period_qty)
 
-    mosaic_def = stac_to_mosaicJSON(
-        body,
+    if seasons:
+        features = filter_season(features, seasons)
+
+    if not features:
+        return ("NOK", "text/plain", "No assets found for query")
+
+    mosaic_def = features_to_mosaicJSON(
+        features=features,
+        quadkey_zoom=quadkey_zoom,
         minzoom=minzoom,
-        maxzoom=maxzoom,
-        optimized_selection=optimized_selection,
-        maximum_items_per_tile=maximum_items_per_tile,
-        stac_collection_limit=stac_collection_limit,
-        seasons=seasons,
-    )
+        maxzoom=maxzoom)
 
     with MosaicBackend(url, mosaic_def=mosaic_def) as mosaic:
         mosaic.upload()
