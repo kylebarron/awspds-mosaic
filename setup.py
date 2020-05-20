@@ -9,7 +9,7 @@ inst_reqs = [
     "cogeo-mosaic>=3.0a3",
     # For custom response headers
     "lambda-proxy @ git+https://github.com/kylebarron/lambda-proxy@dev#egg=lambda-proxy",
-    "landsat-cogeo-mosaic @ git+https://github.com/kylebarron/landsat-cogeo-mosaic@dev#egg=landsat-cogeo-mosaic",
+    "landsat-cogeo-mosaic @ git+https://github.com/kylebarron/landsat-cogeo-mosaic@master#egg=landsat-cogeo-mosaic",
     "loguru",
     "mercantile",
     "rio-color",
