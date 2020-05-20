@@ -47,7 +47,7 @@ def create(
         - seasons, can provide multiple. Choice of 'spring', 'summer', 'autumn', 'winter'
     """
     period_choices = ['day', 'week', 'month', 'year']
-    if period not in period_choices:
+    if period and period not in period_choices:
         return ("NOK", "text/plain", f"Period must be one of {period_choices}")
 
     min_cloud = float(min_cloud)
