@@ -118,7 +118,7 @@ def create(
         maxzoom=maxzoom)
 
     with MosaicBackend(url, mosaic_def=mosaic_def) as mosaic:
-        mosaic.upload()
+        mosaic.write()
 
     return get_tilejson(
         mosaic_def, url, tile_scale, tile_format, host=app.host, path="/tiles", **kwargs
