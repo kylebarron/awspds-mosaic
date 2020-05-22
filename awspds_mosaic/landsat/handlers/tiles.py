@@ -1,30 +1,24 @@
 """awspds-mosaic.handlers.landsat: handle request for landsat mosaic."""
-
-from typing import Any, BinaryIO, Tuple
-
 import io
 import json
 import os
-
-import numpy
+from typing import Any, BinaryIO, Tuple
 
 import mercantile
-from rasterio.transform import from_bounds
-
-from rio_tiler.colormap import get_colormap
-from rio_tiler.utils import expression as expressionTiler, render
-from rio_tiler.profiles import img_profiles
-from rio_tiler.io.landsat8 import tile as landsatTiler
-from rio_tiler_mosaic.mosaic import mosaic_tiler
-
-from cogeo_mosaic.backends import MosaicBackend
-
-from awspds_mosaic.utils import post_process_tile, get_tilejson
+import numpy
+import pyarrow as pa
 from awspds_mosaic.pixel_methods import pixSel
-
-from PIL import Image
-
+from awspds_mosaic.utils import get_tilejson, post_process_tile
+from cogeo_mosaic.backends import MosaicBackend
 from lambda_proxy.proxy import API
+from PIL import Image
+from rasterio.transform import from_bounds
+from rio_tiler.colormap import get_colormap
+from rio_tiler.io.landsat8 import tile as landsatTiler
+from rio_tiler.profiles import img_profiles
+from rio_tiler.utils import expression as expressionTiler
+from rio_tiler.utils import render
+from rio_tiler_mosaic.mosaic import mosaic_tiler
 
 app = API(name="awspds-mosaic-landsat-tiles", debug=False)
 
@@ -208,7 +202,7 @@ def tiles(
     if color_map:
         color_map = get_colormap(color_map, format="gdal")
 
-    assets_str = json.dumps(assets, separators=(',', ':'))
+    assets_str = json.dumps(assets, separators=(",", ":"))
     return_kwargs = {"custom_headers": {"X-ASSETS": assets_str}}
 
     if ext == "gif":
@@ -246,6 +240,12 @@ def tiles(
 
     rtile = post_process_tile(tile, mask, rescale=rescale, color_formula=color_ops)
 
+    if ext == "arrow":
+        # Flatten in Column-major order
+        pa_arr = pa.array(rtile.flatten("F"))
+        buf = pa.serialize(pa_arr).to_buffer()
+        return ("OK", "application/octet-stream", buf, return_kwargs)
+
     driver = "jpeg" if ext == "jpg" else ext
     options = img_profiles.get(driver, {})
 
@@ -262,7 +262,7 @@ def tiles(
         "OK",
         f"image/{ext}",
         render(rtile, mask, img_format=driver, colormap=color_map, **options),
-        return_kwargs
+        return_kwargs,
     )
 
 
