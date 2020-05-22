@@ -11,7 +11,6 @@ inst_reqs = [
     "lambda-proxy @ git+https://github.com/kylebarron/lambda-proxy@dev#egg=lambda-proxy",
     "landsat-cogeo-mosaic==0.1.1",
     "loguru",
-    "pyarrow",
     "mercantile",
     "rio-color",
     "rio-tiler>=2.0a6",

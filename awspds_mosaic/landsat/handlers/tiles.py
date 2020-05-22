@@ -6,7 +6,6 @@ from typing import Any, BinaryIO, Tuple
 
 import mercantile
 import numpy
-import pyarrow as pa
 from awspds_mosaic.pixel_methods import pixSel
 from awspds_mosaic.utils import get_tilejson, post_process_tile
 from cogeo_mosaic.backends import MosaicBackend
@@ -240,11 +239,10 @@ def tiles(
 
     rtile = post_process_tile(tile, mask, rescale=rescale, color_formula=color_ops)
 
-    if ext == "arrow":
+    if ext == "bin":
         # Flatten in Column-major order
-        pa_arr = pa.array(rtile.flatten("F"))
-        buf = pa.serialize(pa_arr).to_buffer()
-        return ("OK", "application/octet-stream", buf, return_kwargs)
+        buf = rtile.tobytes(order='F')
+        return ("OK", "application/x-binary", buf, return_kwargs)
 
     driver = "jpeg" if ext == "jpg" else ext
     options = img_profiles.get(driver, {})
