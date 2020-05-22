@@ -240,8 +240,8 @@ def tiles(
     rtile = post_process_tile(tile, mask, rescale=rescale, color_formula=color_ops)
 
     if ext == "bin":
-        # Flatten in Column-major order
-        buf = rtile.tobytes(order='F')
+        # Flatten in Row-major order
+        buf = rtile.tobytes(order='C')
         return ("OK", "application/x-binary", buf, return_kwargs)
 
     driver = "jpeg" if ext == "jpg" else ext
