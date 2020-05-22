@@ -22,8 +22,8 @@ def create(
     bounds: str,
     min_cloud: float = 0,
     max_cloud: float = 100,
-    min_date='2013-01-01',
-    max_date= datetime.strftime(datetime.today(), "%Y-%m-%d"),
+    min_date="2013-01-01",
+    max_date=datetime.strftime(datetime.today(), "%Y-%m-%d"),
     period: str = None,
     period_qty: int = 1,
     seasons: str = None,
@@ -46,7 +46,7 @@ def create(
         - period_qty: Number of periods to apply after `min-date`. Only applies if `period` is provided
         - seasons, can provide multiple. Choice of 'spring', 'summer', 'autumn', 'winter'
     """
-    period_choices = ['day', 'week', 'month', 'year']
+    period_choices = ["day", "week", "month", "year"]
     if period and period not in period_choices:
         return ("NOK", "text/plain", f"Period must be one of {period_choices}")
 
@@ -54,7 +54,7 @@ def create(
     max_cloud = float(max_cloud)
     minzoom = int(minzoom)
     maxzoom = int(maxzoom)
-    bounds = tuple(map(float, bounds.split(',')))
+    bounds = tuple(map(float, bounds.split(",")))
 
     if seasons:
         seasons = seasons.split(",")
@@ -103,7 +103,8 @@ def create(
         min_date=min_date,
         max_date=max_date,
         period=period,
-        period_qty=period_qty)
+        period_qty=period_qty,
+    )
 
     if seasons:
         features = filter_season(features, seasons)
@@ -112,10 +113,8 @@ def create(
         return ("NOK", "text/plain", "No assets found for query")
 
     mosaic_def = features_to_mosaicJSON(
-        features=features,
-        quadkey_zoom=quadkey_zoom,
-        minzoom=minzoom,
-        maxzoom=maxzoom)
+        features=features, quadkey_zoom=quadkey_zoom, minzoom=minzoom, maxzoom=maxzoom
+    )
 
     with MosaicBackend(url, mosaic_def=mosaic_def) as mosaic:
         mosaic.write()
