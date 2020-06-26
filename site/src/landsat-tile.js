@@ -33,7 +33,8 @@ export function LandsatTileLayer(props) {
           rgbBands
         })
       ),
-    renderSubLayers
+    renderSubLayers,
+    maxRequests: 6
   });
 }
 
