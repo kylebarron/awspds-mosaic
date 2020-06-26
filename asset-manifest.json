@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/landsat-mosaic-tiler/static/css/main.0c260890.chunk.css",
+    "main.js": "/landsat-mosaic-tiler/static/js/main.4fe2ac22.chunk.js",
+    "main.js.map": "/landsat-mosaic-tiler/static/js/main.4fe2ac22.chunk.js.map",
+    "runtime-main.js": "/landsat-mosaic-tiler/static/js/runtime-main.338b234d.js",
+    "runtime-main.js.map": "/landsat-mosaic-tiler/static/js/runtime-main.338b234d.js.map",
+    "static/js/2.8aef6051.chunk.js": "/landsat-mosaic-tiler/static/js/2.8aef6051.chunk.js",
+    "static/js/2.8aef6051.chunk.js.map": "/landsat-mosaic-tiler/static/js/2.8aef6051.chunk.js.map",
+    "index.html": "/landsat-mosaic-tiler/index.html",
+    "precache-manifest.2bfa357c21b97f541e88b466afa9351d.js": "/landsat-mosaic-tiler/precache-manifest.2bfa357c21b97f541e88b466afa9351d.js",
+    "service-worker.js": "/landsat-mosaic-tiler/service-worker.js",
+    "static/css/main.0c260890.chunk.css.map": "/landsat-mosaic-tiler/static/css/main.0c260890.chunk.css.map",
+    "static/js/2.8aef6051.chunk.js.LICENSE.txt": "/landsat-mosaic-tiler/static/js/2.8aef6051.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.338b234d.js",
+    "static/js/2.8aef6051.chunk.js",
+    "static/css/main.0c260890.chunk.css",
+    "static/js/main.4fe2ac22.chunk.js"
+  ]
+}
