@@ -94,7 +94,8 @@ functions:
     layers:
       - arn:aws:lambda:${self:provider.region}:524387336408:layer:gdal24-py37-geolayer:1
     environment:
-      CACHE_CONTROL: ${opt:cache-control, 'max-age=3600'}
+      # 4-day cache control, 4-day stale while revalidate by default
+      CACHE_CONTROL: ${opt:cache-control, 'public,max-age=345600,stale-while-revalidate=345600'}
       CPL_TMPDIR: /tmp
       CPL_VSIL_CURL_ALLOWED_EXTENSIONS: .tif,.TIF,.ovr
       GDAL_CACHEMAX: 512
@@ -121,7 +122,8 @@ functions:
     layers:
       - arn:aws:lambda:${self:provider.region}:524387336408:layer:gdal24-py37-geolayer:1
     environment:
-      CACHE_CONTROL: ${opt:cache-control, 'max-age=3600'}
+      # 4-day cache control, 4-day stale while revalidate by default
+      CACHE_CONTROL: ${opt:cache-control, 'public,max-age=345600,stale-while-revalidate=345600'}
       GDAL_DATA: /opt/share/gdal
       MOSAIC_DEF_BUCKET: ${opt:bucket}
       PROJ_LIB: /opt/share/proj
