@@ -1,4 +1,4 @@
-service: awspds-mosaic-landsat
+service: landsat-mosaic-tiler
 
 provider:
   name: aws
@@ -32,7 +32,7 @@ package:
 
 functions:
   tiler:
-    handler: awspds_mosaic.handlers.tiles.app
+    handler: landsat_mosaic_tiler.handlers.tiles.app
     memorySize: 3008
     timeout: 20
     layers:
@@ -59,7 +59,7 @@ functions:
           method: '*'
 
   mosaics:
-    handler: awspds_mosaic.handlers.mosaic.app
+    handler: landsat_mosaic_tiler.handlers.mosaic.app
     memorySize: 3008
     timeout: 30
     layers:
@@ -75,7 +75,7 @@ functions:
           method: '*'
 
   batch:
-      handler: awspds_mosaic.handlers.tiles.app
+      handler: landsat_mosaic_tiler.handlers.tiles.app
       memorySize: 3008
       timeout: 30
       layers:
