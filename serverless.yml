@@ -32,7 +32,7 @@ package:
 
 functions:
   tiler:
-    handler: awspds_mosaic.landsat.handlers.tiles.app
+    handler: awspds_mosaic.handlers.tiles.app
     memorySize: 3008
     timeout: 20
     layers:
@@ -59,7 +59,7 @@ functions:
           method: '*'
 
   mosaics:
-    handler: awspds_mosaic.landsat.handlers.mosaic.app
+    handler: awspds_mosaic.handlers.mosaic.app
     memorySize: 3008
     timeout: 30
     layers:
@@ -75,7 +75,7 @@ functions:
           method: '*'
 
   batch:
-      handler: awspds_mosaic.landsat.handlers.tiles.app
+      handler: awspds_mosaic.handlers.tiles.app
       memorySize: 3008
       timeout: 30
       layers:

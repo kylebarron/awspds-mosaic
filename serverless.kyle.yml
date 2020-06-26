@@ -88,7 +88,7 @@ package:
 
 functions:
   tiler:
-    handler: awspds_mosaic.landsat.handlers.tiles.app
+    handler: awspds_mosaic.handlers.tiles.app
     memorySize: 1024
     timeout: 20
     layers:
@@ -116,7 +116,7 @@ functions:
           method: '*'
 
   mosaics:
-    handler: awspds_mosaic.landsat.handlers.mosaic.app
+    handler: awspds_mosaic.handlers.mosaic.app
     memorySize: 1024
     timeout: 20
     layers:
