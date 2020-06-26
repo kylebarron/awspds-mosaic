@@ -6,9 +6,8 @@ provider:
   stage: ${opt:stage, 'production'}
   region: us-west-2
   deploymentBucket: ${opt:bucket}
-
-  stackTags:
-    Project: labs
+  httpApi:
+    cors: true
 
   iamRoleStatements:
   -  Effect: "Allow"
@@ -32,27 +31,6 @@ package:
   artifact: ../../package.zip
 
 functions:
-  web:
-    handler: awspds_mosaic.landsat.handlers.web.app
-    memorySize: 128
-    timeout: 3
-    layers:
-      - arn:aws:lambda:${self:provider.region}:524387336408:layer:gdal24-py37-geolayer:1
-    environment:
-      CACHE_CONTROL: ${opt:cache-control, 'max-age=3600'}
-      GDAL_DATA: /opt/share/gdal
-      PROJ_LIB: /opt/share/proj
-      MAPBOX_ACCESS_TOKEN: ${opt:token, ""}
-    events:
-      - httpApi:
-          path: /
-          method: GET
-          cors: true
-      - httpApi:
-          path: /{proxy+}
-          method: GET
-          cors: true
-
   tiler:
     handler: awspds_mosaic.landsat.handlers.tiles.app
     memorySize: 3008
@@ -79,7 +57,6 @@ functions:
       - httpApi:
           path: /tiles/{proxy+}
           method: '*'
-          cors: true
 
   mosaics:
     handler: awspds_mosaic.landsat.handlers.mosaic.app
@@ -96,7 +73,6 @@ functions:
       - httpApi:
           path: /mosaic/{proxy+}
           method: '*'
-          cors: true
 
   batch:
       handler: awspds_mosaic.landsat.handlers.tiles.app
@@ -124,4 +100,3 @@ functions:
         - httpApi:
             path: /batch/{proxy+}
             method: '*'
-            cors: true
