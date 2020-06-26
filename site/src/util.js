@@ -3,11 +3,11 @@
  * @param {Number} nBands Number of bands
  */
 function landsatColorOps(nBands) {
-  const colorBands = 'RGB'.slice(0, nBands);
+  const colorBands = "RGB".slice(0, nBands);
   let colorStr = `gamma ${colorBands} 3.5, sigmoidal ${colorBands} 15 0.35`;
 
   if (nBands === 3) {
-    colorStr += ', saturation 1.7';
+    colorStr += ", saturation 1.7";
   }
   return colorStr;
 }
@@ -26,9 +26,9 @@ export function getLandsatUrl(options) {
   const { bands, mosaicUrl, x, y, z, color_ops } = options || {};
   const bandsArray = Array.isArray(bands) ? bands : [bands];
   const params = new URLSearchParams({
-    bands: bandsArray.join(','),
+    bands: bandsArray.join(","),
     color_ops: color_ops || landsatColorOps(bandsArray.length),
-    url: mosaicUrl,
+    url: mosaicUrl
   });
   let baseUrl = `https://us-west-2-lambda.kylebarron.dev/landsat/tiles/${z}/${x}/${y}@2x.jpg?`;
   return baseUrl + params.toString();
@@ -40,7 +40,7 @@ export function getLandsatUrl(options) {
  * @param {string} hash Page URL hash
  */
 export function getViewStateFromHash(hash) {
-  if (!hash || hash.charAt(0) !== '#') {
+  if (!hash || hash.charAt(0) !== "#") {
     return {};
   }
 
@@ -48,7 +48,7 @@ export function getViewStateFromHash(hash) {
   let hashArray = hash
     // Remove # symbol
     .substring(1)
-    .split('/')
+    .split("/")
     .map(Number);
 
   // Remove non-numeric values
@@ -62,7 +62,7 @@ export function getViewStateFromHash(hash) {
     latitude,
     longitude,
     pitch,
-    zoom,
+    zoom
   };
 
   // Delete null keys
