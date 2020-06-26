@@ -1,19 +1,13 @@
 import React from "react";
 import DeckGL from "@deck.gl/react";
 import { MapboxLayer } from "@deck.gl/mapbox";
-// import { PostProcessEffect } from '@deck.gl/core';
 import { StaticMap } from "react-map-gl";
 import { LandsatTileLayer } from "./landsat-tile";
-// import { vibrance } from '@luma.gl/shadertools';
 import { getViewStateFromHash } from "./util";
 
 import "./App.css";
 
 const mapStyle = require("./style.json");
-
-// const vibranceEffect = new PostProcessEffect(vibrance, {
-//   amount: 1,
-// });
 
 const initialViewState = {
   longitude: -112.1861,
@@ -56,8 +50,8 @@ export default class App extends React.Component {
   };
 
   render() {
-    const { gl, viewState} = this.state;
-    const landsatMosaicUrl = 'dynamodb://us-west-2/landsat8-2015-spring';
+    const { gl, viewState } = this.state;
+    const landsatMosaicUrl = "dynamodb://us-west-2/landsat8-2015-spring";
 
     const layers = [
       new LandsatTileLayer({
