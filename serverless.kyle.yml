@@ -84,7 +84,7 @@ provider:
     minimumCompressionSize: 1
 
 package:
-  artifact: ../../package.zip
+  artifact: package.zip
 
 functions:
   tiler:
