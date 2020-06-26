@@ -10,9 +10,9 @@ import "./App.css";
 const mapStyle = require("./style.json");
 
 const initialViewState = {
-  longitude: -112.1861,
-  latitude: 36.1284,
-  zoom: 11.5,
+  longitude: -109.5731,
+  latitude: 38.4791,
+  zoom: 9.5,
   pitch: 0,
   bearing: 0,
   maxPitch: 85
