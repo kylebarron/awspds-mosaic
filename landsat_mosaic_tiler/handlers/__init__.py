@@ -1,1 +1,1 @@
-"""landsat_mosaic: handlers"""
+"""landsat_mosaic_tiler: handlers"""

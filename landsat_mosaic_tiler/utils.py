@@ -1,4 +1,4 @@
-"""awspds_mosaic.utils: utility functions."""
+"""landsat_mosaic_tiler.utils: utility functions."""
 
 import hashlib
 import json

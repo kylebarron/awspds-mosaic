@@ -1,4 +1,4 @@
-"""ard-tiler.mosaic: create mosaicJSON from a stac query."""
+"""landsat-mosaic-tiler.mosaic: create mosaicJSON from a stac query."""
 
 import numpy
 

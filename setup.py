@@ -1,4 +1,4 @@
-"""Setup awspds-mosaic."""
+"""Setup landsat-mosaic-tiler."""
 
 from setuptools import setup, find_packages
 
@@ -22,10 +22,10 @@ extra_reqs = {
 }
 
 setup(
-    name="awspds-mosaic",
-    version="0.0.1",
-    description=u"Create and serve mosaics.",
-    long_description=u"Create and serve mosaics.",
+    name="landsat-mosaic-tiler",
+    version="0.1.0",
+    description=u"Serverless Landsat Image tiles from mosaics of Cloud Optimized GeoTIFFs.",
+    long_description=u"Serverless Landsat Image tiles from mosaics of Cloud Optimized GeoTIFFs.",
     python_requires=">=3",
     classifiers=[
         "Intended Audience :: Information Technology",
@@ -34,9 +34,9 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
     ],
-    keywords="COG GIS",
-    author=u"Vincent Sarago",
-    author_email="vincent@developmentseed.org",
+    keywords="COG GIS Landsat",
+    author=u"Kyle Barron",
+    author_email="kylebarron2@gmail.com",
     url="",
     license="BSD",
     packages=find_packages(exclude=["ez_setup", "examples", "tests"]),
@@ -44,5 +44,5 @@ setup(
     zip_safe=False,
     install_requires=inst_reqs,
     extras_require=extra_reqs,
-    entry_points={"console_scripts": ["awspds-mosaic = awspds_mosaic.scripts.cli:run"]},
+    entry_points={"console_scripts": ["landsat-mosaic = landsat_mosaic_tiler.scripts.cli:run"]},
 )

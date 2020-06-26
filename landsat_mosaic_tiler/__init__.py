@@ -1,4 +1,4 @@
-"""awspds_mosaic."""
+"""landsat_mosaic_tiler."""
 
 import pkg_resources
 

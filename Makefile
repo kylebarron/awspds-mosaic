@@ -4,11 +4,11 @@ SHELL = /bin/bash
 all: package deploy
 
 package:
-	docker build --tag awspds-mosaic:latest .
-	docker run --name awspds-mosaic --volume $(shell pwd)/:/local -itd awspds-mosaic:latest bash
-	docker exec -it awspds-mosaic bash '/local/bin/package.sh'
-	docker stop awspds-mosaic
-	docker rm awspds-mosaic
+	docker build --tag landsat-mosaic-tiler:latest .
+	docker run --name landsat-mosaic-tiler --volume $(shell pwd)/:/local -itd landsat-mosaic-tiler:latest bash
+	docker exec -it landsat-mosaic-tiler bash '/local/bin/package.sh'
+	docker stop landsat-mosaic-tiler
+	docker rm landsat-mosaic-tiler
 
 STAGENAME=production
 BUCKET=MYBUCKET

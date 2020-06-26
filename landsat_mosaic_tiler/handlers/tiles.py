@@ -1,4 +1,4 @@
-"""awspds-mosaic.handlers.landsat: handle request for landsat mosaic."""
+"""landsat_mosaic_tiler.handlers.tiles: handle request for landsat mosaic."""
 import io
 import json
 import os
@@ -6,8 +6,8 @@ from typing import Any, BinaryIO, Tuple
 
 import mercantile
 import numpy
-from awspds_mosaic.pixel_methods import pixSel
-from awspds_mosaic.utils import get_tilejson, post_process_tile
+from landsat_mosaic_tiler.pixel_methods import pixSel
+from landsat_mosaic_tiler.utils import get_tilejson, post_process_tile
 from cogeo_mosaic.backends import MosaicBackend
 from lambda_proxy.proxy import API
 from PIL import Image
@@ -19,7 +19,7 @@ from rio_tiler.utils import expression as expressionTiler
 from rio_tiler.utils import render
 from rio_tiler_mosaic.mosaic import mosaic_tiler
 
-app = API(name="awspds-mosaic-landsat-tiles", debug=False)
+app = API(name="landsat-mosaic-tiler-tiles", debug=False)
 
 
 @app.route(

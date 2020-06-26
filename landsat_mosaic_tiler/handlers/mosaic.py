@@ -1,11 +1,11 @@
-"""awspds_mosaic.handlers.mosaics: create mosaics."""
+"""landsat_mosaic_tiler.handlers.mosaics: create mosaics."""
 
 import json
 import os
 from datetime import datetime
 from typing import Any, Tuple
 
-from awspds_mosaic.utils import get_hash, get_tilejson
+from landsat_mosaic_tiler.utils import get_hash, get_tilejson
 from cogeo_mosaic.backends import MosaicBackend
 from lambda_proxy.proxy import API
 
@@ -13,7 +13,7 @@ from landsat_cogeo_mosaic.mosaic import features_to_mosaicJSON
 from landsat_cogeo_mosaic.stac import search
 from landsat_cogeo_mosaic.util import filter_season
 
-app = API(name="awspds-mosaic-landsat-mosaic", debug=True)
+app = API(name="landsat-mosaic-tiler-mosaic", debug=True)
 
 
 @app.route("/create", methods=["POST"], cors=True, tag=["mosaic"])

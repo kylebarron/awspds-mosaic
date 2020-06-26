@@ -1,4 +1,4 @@
-"""Test awspds_mosaic locally."""
+"""Test landsat_mosaic_tiler locally."""
 
 import click
 import base64
@@ -8,9 +8,8 @@ from socketserver import ThreadingMixIn
 from urllib.parse import urlparse, parse_qsl
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
-from awspds_mosaic.landsat.handlers.mosaic import app as app_mosaic
-from awspds_mosaic.landsat.handlers.tiles import app as app_tiles
-from awspds_mosaic.landsat.handlers.web import app
+from landsat_mosaic_tiler.handlers.mosaic import app as app_mosaic
+from landsat_mosaic_tiler.handlers.tiles import app as app_tiles
 
 app.https = False
 app_tiles.https = False
