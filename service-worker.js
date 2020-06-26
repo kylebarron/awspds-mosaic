@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/landsat-mosaic-tiler/precache-manifest.2bfa357c21b97f541e88b466afa9351d.js"
+  "/landsat-mosaic-tiler/precache-manifest.644aef1456b489f2728c07bd2ba2e3d7.js"
 );
 
 self.addEventListener('message', (event) => {
