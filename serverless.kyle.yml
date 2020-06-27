@@ -63,7 +63,7 @@ provider:
       - "s3:HeadObject"
       - "s3:PutObject"
     Resource:
-      - arn:aws:s3:::${opt:bucket}*
+      - arn:aws:s3:::${self:provider.deploymentBucket}*
 
   - Effect: "Allow"
     Action:
@@ -105,7 +105,7 @@ functions:
       GDAL_HTTP_MULTIPLEX: YES
       GDAL_HTTP_VERSION: 2
       MAX_THREADS: 10
-      MOSAIC_DEF_BUCKET: ${opt:bucket}
+      MOSAIC_DEF_BUCKET: ${self:provider.deploymentBucket}
       PROJ_LIB: /opt/share/proj
       PYTHONWARNINGS: ignore
       VSI_CACHE: TRUE
@@ -125,7 +125,7 @@ functions:
       # 4-day cache control, 4-day stale while revalidate by default
       CACHE_CONTROL: ${opt:cache-control, 'public,max-age=345600,stale-while-revalidate=345600'}
       GDAL_DATA: /opt/share/gdal
-      MOSAIC_DEF_BUCKET: ${opt:bucket}
+      MOSAIC_DEF_BUCKET: ${self:provider.deploymentBucket}
       PROJ_LIB: /opt/share/proj
     events:
       - httpApi:
