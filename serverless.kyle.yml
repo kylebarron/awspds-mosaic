@@ -89,8 +89,8 @@ package:
 functions:
   tiler:
     handler: landsat_mosaic_tiler.handlers.tiles.app
-    memorySize: 1024
-    timeout: 20
+    memorySize: 1536
+    timeout: 10
     layers:
       - arn:aws:lambda:${self:provider.region}:524387336408:layer:gdal24-py37-geolayer:1
     environment:
@@ -104,7 +104,7 @@ functions:
       GDAL_HTTP_MERGE_CONSECUTIVE_RANGES: YES
       GDAL_HTTP_MULTIPLEX: YES
       GDAL_HTTP_VERSION: 2
-      MAX_THREADS: 10
+      MAX_THREADS: 1
       MOSAIC_DEF_BUCKET: ${self:provider.deploymentBucket}
       PROJ_LIB: /opt/share/proj
       PYTHONWARNINGS: ignore
