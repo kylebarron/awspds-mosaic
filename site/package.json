@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@kylebarron/deck.gl-raster": "^0.2.1",
+    "@kylebarron/deck.gl-raster": "0.2.2",
     "@loaders.gl/core": "^2.2.5",
     "@loaders.gl/images": "^2.2.5",
     "@luma.gl/constants": "^8.1.3",

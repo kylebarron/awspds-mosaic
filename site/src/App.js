@@ -58,7 +58,8 @@ export default class App extends React.Component {
         id: "landsat-tile-layer",
         gl,
         mosaicUrl: landsatMosaicUrl,
-        rgbBands: [4, 3, 2]
+        rgbBands: [4, 3, 2],
+        tileSize: 256
       })
     ];
 

@@ -30,7 +30,7 @@ export function getLandsatUrl(options) {
     color_ops: color_ops || landsatColorOps(bandsArray.length),
     url: mosaicUrl
   });
-  let baseUrl = `https://us-west-2-lambda.kylebarron.dev/landsat/tiles/${z}/${x}/${y}@2x.jpg?`;
+  let baseUrl = `https://us-west-2-lambda.kylebarron.dev/landsat/tiles/${z}/${x}/${y}.jpg?`;
   return baseUrl + params.toString();
 }
 

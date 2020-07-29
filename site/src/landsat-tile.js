@@ -2,7 +2,7 @@ import { TileLayer } from "@deck.gl/geo-layers";
 import {
   RasterLayer,
   combineBands,
-  pansharpenBrovey
+  pansharpenBrovey,
 } from "@kylebarron/deck.gl-raster";
 import { getLandsatUrl } from "./util";
 import { imageUrlsToTextures } from "./webgl-util";
@@ -17,24 +17,26 @@ export function LandsatTileLayer(props) {
     id = "landsat-tile-layer",
     mosaicUrl,
     color_ops,
-    rgbBands
+    rgbBands,
+    tileSize = 512,
   } = props || {};
 
   return new TileLayer({
     id,
     minZoom,
     maxZoom,
-    getTileData: args =>
+    getTileData: (args) =>
       getTileData(
         Object.assign(args, {
           gl,
           mosaicUrl,
           color_ops,
-          rgbBands
+          rgbBands,
         })
       ),
     renderSubLayers,
-    maxRequests: 6
+    maxRequests: 0,
+    tileSize,
   });
 }
 
@@ -54,7 +56,7 @@ async function getTileData(options) {
   const urls = [
     getLandsatUrl({ x, y, z, bands: rgbBands[0], mosaicUrl, color_ops }),
     getLandsatUrl({ x, y, z, bands: rgbBands[1], mosaicUrl, color_ops }),
-    getLandsatUrl({ x, y, z, bands: rgbBands[2], mosaicUrl, color_ops })
+    getLandsatUrl({ x, y, z, bands: rgbBands[2], mosaicUrl, color_ops }),
   ];
 
   const imageBands = imageUrlsToTextures(gl, urls);
@@ -65,13 +67,19 @@ async function getTileData(options) {
 
 function renderSubLayers(props) {
   const {
-    bbox: { west, south, east, north }
+    bbox: { west, south, east, north },
   } = props.tile;
-  const { modules, ...moduleProps } = props.data;
+  const { data } = props;
+
+  if (!data) {
+    return;
+  }
+
+  const { modules, ...moduleProps } = data;
 
   return new RasterLayer(props, {
     modules,
     moduleProps,
-    bounds: [west, south, east, north]
+    bounds: [west, south, east, north],
   });
 }
