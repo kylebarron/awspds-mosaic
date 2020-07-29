@@ -6,18 +6,20 @@ from typing import Any, BinaryIO, Tuple
 
 import mercantile
 import numpy
+from lambda_proxy.proxy import API
+from landsat_mosaic_tiler.landsat_tiler import tile as landsatTiler
 from landsat_mosaic_tiler.pixel_methods import pixSel
 from landsat_mosaic_tiler.utils import get_tilejson, post_process_tile
-from cogeo_mosaic.backends import MosaicBackend
-from lambda_proxy.proxy import API
 from PIL import Image
 from rasterio.transform import from_bounds
 from rio_tiler.colormap import get_colormap
-from rio_tiler.io.landsat8 import tile as landsatTiler
 from rio_tiler.profiles import img_profiles
 from rio_tiler.utils import expression as expressionTiler
 from rio_tiler.utils import render
 from rio_tiler_mosaic.mosaic import mosaic_tiler
+# from rio_tiler.io.landsat8 import tile as origLandsatTiler
+
+from cogeo_mosaic.backends import MosaicBackend
 
 app = API(name="landsat-mosaic-tiler-tiles", debug=False)
 
@@ -237,6 +239,8 @@ def tiles(
         sio.seek(0)
         return ("OK", f"image/{ext}", sio.getvalue(), return_kwargs)
 
+    # tile, mask = origLandsatTiler(sceneid, x, y, z, bands)
+    # tile, mask = landsatTiler(sceneid, x, y, z, bands)
     rtile = post_process_tile(tile, mask, rescale=rescale, color_formula=color_ops)
 
     if ext == "bin":
@@ -246,7 +250,8 @@ def tiles(
 
     driver = "jpeg" if ext == "jpg" else ext
     options = img_profiles.get(driver, {})
-
+    # with open('test2.png', 'wb') as f:
+    #     f.write(render(rtile, mask, img_format=driver, colormap=color_map, **options))
     if ext == "tif":
         ext = "tiff"
         driver = "GTiff"
