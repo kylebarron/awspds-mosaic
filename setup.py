@@ -13,8 +13,8 @@ inst_reqs = [
     "loguru",
     "mercantile",
     "rio-color",
-    "rio-tiler>=2.0a6",
-    "rio_tiler_mosaic>=0.0.1dev3",
+    "rio-tiler==2.0a11",
+    "rio-tiler-mosaic==0.0.1dev5",
 ]
 extra_reqs = {
     "test": ["pytest", "pytest-cov", "mock"],
