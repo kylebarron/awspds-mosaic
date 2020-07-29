@@ -84,7 +84,7 @@ functions:
         CACHE_CONTROL: ${opt:cache-control, 'max-age=3600'}
         CPL_TMPDIR: /tmp
         CPL_VSIL_CURL_ALLOWED_EXTENSIONS: .tif,.TIF,.ovr
-      GDAL_CACHEMAX: 25%
+        GDAL_CACHEMAX: 25%
         GDAL_DATA: /opt/share/gdal
         GDAL_DISABLE_READDIR_ON_OPEN: FALSE
         GDAL_HTTP_MERGE_CONSECUTIVE_RANGES: YES
