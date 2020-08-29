@@ -1,4 +1,4 @@
-service: landsat-mosaic-tiler
+service: sentinel-mosaic-tiler
 
 provider:
   name: aws

@@ -4,16 +4,14 @@ import json
 import os
 from typing import Any, BinaryIO, Tuple
 
-import mercantile
 import numpy
 from landsat_mosaic_tiler.pixel_methods import pixSel
 from landsat_mosaic_tiler.utils import get_tilejson, post_process_tile
 from cogeo_mosaic.backends import MosaicBackend
 from lambda_proxy.proxy import API
-from PIL import Image
 from rasterio.transform import from_bounds
 from rio_tiler.colormap import get_colormap
-from rio_tiler.io.landsat8 import tile as landsatTiler
+from rio_tiler.io.sentinel2 import tile as sentinel2Tiler
 from rio_tiler.profiles import img_profiles
 from rio_tiler.utils import expression as expressionTiler
 from rio_tiler.utils import render
@@ -110,7 +108,7 @@ def npy_tiles(
             x,
             y,
             z,
-            landsatTiler,
+            sentinel2Tiler,
             pixel_selection=pixel_selection(),
             bands=tuple(bands.split(",")),
             tilesize=tilesize,
@@ -123,6 +121,8 @@ def npy_tiles(
     sio.seek(0)
     return ("OK", "application/x-binary", sio.getvalue())
 
+
+{url: "s3://mosaics-us-west-2.kylebarron.dev/mosaics/sentinel/test_mosaic.json.gz", bands: "5", color_ops: "gamma R 3.5, sigmoidal R 15 0.35"}
 
 @app.route(
     "/<int:z>/<int:x>/<int:y>.<ext>",
@@ -186,11 +186,10 @@ def tiles(
             x,
             y,
             z,
-            landsatTiler,
+            sentinel2Tiler,
             pixel_selection=pixel_selection(),
             bands=tuple(bands.split(",")),
             tilesize=tilesize,
-            pan=pan,
         )
     else:
         return ("NOK", "text/plain", "No bands nor expression given")
@@ -204,39 +203,6 @@ def tiles(
     assets_str = json.dumps(assets, separators=(",", ":"))
     return_kwargs = {"custom_headers": {"X-ASSETS": assets_str}}
 
-    if ext == "gif":
-        frames = []
-        options = img_profiles.get("png", {})
-        for i in range(len(tile)):
-            img = post_process_tile(
-                tile[i].copy(), mask[i].copy(), rescale=rescale, color_formula=color_ops
-            )
-            frames.append(
-                Image.open(
-                    io.BytesIO(
-                        render(
-                            img,
-                            mask[i],
-                            img_format="png",
-                            colormap=color_map,
-                            **options,
-                        )
-                    )
-                )
-            )
-        sio = io.BytesIO()
-        frames[0].save(
-            sio,
-            "gif",
-            save_all=True,
-            append_images=frames[1:],
-            duration=300,
-            loop=0,
-            optimize=True,
-        )
-        sio.seek(0)
-        return ("OK", f"image/{ext}", sio.getvalue(), return_kwargs)
-
     rtile = post_process_tile(tile, mask, rescale=rescale, color_formula=color_ops)
 
     if ext == "bin":
@@ -246,15 +212,6 @@ def tiles(
 
     driver = "jpeg" if ext == "jpg" else ext
     options = img_profiles.get(driver, {})
-
-    if ext == "tif":
-        ext = "tiff"
-        driver = "GTiff"
-        tile_bounds = mercantile.xy_bounds(mercantile.Tile(x=x, y=y, z=z))
-        options = dict(
-            crs={"init": "EPSG:3857"},
-            transform=from_bounds(*tile_bounds, tilesize, tilesize),
-        )
 
     return (
         "OK",
