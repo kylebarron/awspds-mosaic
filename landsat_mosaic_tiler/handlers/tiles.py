@@ -12,12 +12,10 @@ from cogeo_mosaic.backends import MosaicBackend
 from lambda_proxy.proxy import API
 from PIL import Image
 from rasterio.transform import from_bounds
-from rio_tiler.colormap import get_colormap
-from rio_tiler.io.landsat8 import tile as landsatTiler
+from rio_tiler.colormap import cmap
 from rio_tiler.profiles import img_profiles
-from rio_tiler.utils import expression as expressionTiler
 from rio_tiler.utils import render
-from rio_tiler_mosaic.mosaic import mosaic_tiler
+from rio_tiler_pds.landsat.aws import L8Reader
 
 app = API(name="landsat-mosaic-tiler-tiles", debug=False)
 
@@ -75,7 +73,7 @@ def npy_tiles(
     x: int,
     y: int,
     scale: int = 1,
-    bands: str = None,
+    bands: str = "",
     expr: str = None,
     pixel_selection: str = "first",
 ) -> Tuple[str, str, BinaryIO]:
@@ -83,45 +81,30 @@ def npy_tiles(
     if url is None:
         return ("NOK", "text/plain", "Missing 'URL' parameter")
 
-    with MosaicBackend(url) as mosaic:
-        assets = mosaic.tile(x, y, z)
-
-    if not assets:
-        return ("EMPTY", "text/plain", f"No assets found for tile {z}-{x}-{y}")
+    if expr and bands:
+        return ("NOK", "text/plain", "Cannot pass both expr and bands")
 
     tilesize = 256 * scale
 
-    pixel_selection = pixSel[pixel_selection]
-    if expr is not None:
-        results = mosaic_tiler(
-            assets,
-            x,
-            y,
-            z,
-            expressionTiler,
+    pixel_selection = pixSel.get(pixel_selection, pixSel['first'])
+    with MosaicBackend(url, reader=L8Reader) as mosaic:
+        (tile, mask), assets_used = mosaic.tile(x, y, z,
             pixel_selection=pixel_selection(),
-            expr=expr,
             tilesize=tilesize,
-        )
-
-    elif bands is not None:
-        results = mosaic_tiler(
-            assets,
-            x,
-            y,
-            z,
-            landsatTiler,
-            pixel_selection=pixel_selection(),
             bands=tuple(bands.split(",")),
-            tilesize=tilesize,
-        )
-    else:
-        return ("NOK", "text/plain", "No bands nor expression given")
+            expression=expr)
+
+    if tile is None:
+        return ("EMPTY", "text/plain", "empty tiles")
+
+    assets_str = json.dumps(assets_used, separators=(",", ":"))
+    return_kwargs = {"custom_headers": {"X-ASSETS": assets_str}}
 
     sio = io.BytesIO()
-    numpy.save(sio, results)
+    # NOTE: this currently omits the mask!
+    numpy.save(sio, tile)
     sio.seek(0)
-    return ("OK", "application/x-binary", sio.getvalue())
+    return ("OK", "application/x-binary", sio.getvalue(), return_kwargs)
 
 
 @app.route(
@@ -149,7 +132,7 @@ def tiles(
     y: int,
     scale: int = 1,
     ext: str = "png",
-    bands: str = None,
+    bands: str = "",
     expr: str = None,
     rescale: str = None,
     color_ops: str = None,
@@ -158,50 +141,29 @@ def tiles(
     pixel_selection: str = "first",
 ) -> Tuple[str, str, BinaryIO]:
     """Handle tile requests."""
-    with MosaicBackend(url) as mosaic:
-        assets = mosaic.tile(x, y, z)
+    if url is None:
+        return ("NOK", "text/plain", "Missing 'URL' parameter")
 
-    if not assets:
-        return ("EMPTY", "text/plain", f"No assets found for tile {z}-{x}-{y}")
+    if expr and bands:
+        return ("NOK", "text/plain", "Cannot pass both expr and bands")
 
     tilesize = 256 * scale
 
-    pixel_selection = pixSel[pixel_selection]
-    if expr is not None:
-        tile, mask = mosaic_tiler(
-            assets,
-            x,
-            y,
-            z,
-            expressionTiler,
+    pixel_selection = pixSel.get(pixel_selection, pixSel['first'])
+    with MosaicBackend(url, reader=L8Reader) as mosaic:
+        (tile, mask), assets_used = mosaic.tile(x, y, z,
             pixel_selection=pixel_selection(),
-            expr=expr,
             tilesize=tilesize,
-            pan=pan,
-        )
-
-    elif bands is not None:
-        tile, mask = mosaic_tiler(
-            assets,
-            x,
-            y,
-            z,
-            landsatTiler,
-            pixel_selection=pixel_selection(),
             bands=tuple(bands.split(",")),
-            tilesize=tilesize,
-            pan=pan,
-        )
-    else:
-        return ("NOK", "text/plain", "No bands nor expression given")
+            expression=expr)
 
     if tile is None:
         return ("EMPTY", "text/plain", "empty tiles")
 
     if color_map:
-        color_map = get_colormap(color_map, format="gdal")
+        color_map = cmap.get(color_map)
 
-    assets_str = json.dumps(assets, separators=(",", ":"))
+    assets_str = json.dumps(assets_used, separators=(",", ":"))
     return_kwargs = {"custom_headers": {"X-ASSETS": assets_str}}
 
     if ext == "gif":

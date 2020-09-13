@@ -3,7 +3,7 @@ service: landsat-mosaic-tiler
 provider:
   name: aws
   runtime: python3.7
-  stage: ${opt:stage, 'production'}
+  stage: ${opt:stage, 'dev'}
   region: us-west-2
   deploymentBucket: ${opt:bucket, 'mosaics-us-west-2.kylebarron.dev'}
   httpApi:

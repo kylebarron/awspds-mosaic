@@ -6,15 +6,17 @@ from setuptools import setup, find_packages
 # Runtime requirements.
 inst_reqs = [
     "Pillow",
-    "cogeo-mosaic>=3.0a3",
+    "cogeo-mosaic>=3.0a10",
     # For custom response headers
     "lambda-proxy @ git+https://github.com/kylebarron/lambda-proxy@dev#egg=lambda-proxy",
-    "landsat-cogeo-mosaic==0.1.1",
+    "landsat-cogeo-mosaic>=0.2.0",
     "loguru",
     "mercantile",
+    "numpy",
+    "rasterio"
     "rio-color",
-    "rio-tiler==2.0a11",
-    "rio-tiler-mosaic==0.0.1dev5",
+    "rio-tiler-pds>=0.2.0",
+    "rio-tiler>=2.0b9",
 ]
 extra_reqs = {
     "test": ["pytest", "pytest-cov", "mock"],

@@ -1,9 +1,8 @@
 """landsat-mosaic-tiler.mosaic: create mosaicJSON from a stac query."""
 
 import numpy
-
-from rio_tiler_mosaic.methods import defaults
-from rio_tiler_mosaic.methods.base import MosaicMethodBase
+from rio_tiler.mosaic.methods import defaults
+from rio_tiler.mosaic.methods.base import MosaicMethodBase
 
 
 class allStack(MosaicMethodBase):
